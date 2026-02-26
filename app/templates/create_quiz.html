@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4">Create New Quiz</h2>
+
+<div class="card shadow-sm p-4 col-md-6">
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Quiz Title</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-dark">
+            Create Quiz
+        </button>
+    </form>
+</div>
+
+{% endblock %}

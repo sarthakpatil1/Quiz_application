@@ -1,0 +1,86 @@
+/* ================= GLOBAL ================= */
+
+body {
+    background-color: #f5f6fa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ================= CARDS ================= */
+
+.card {
+    border-radius: 14px;
+    border: none;
+}
+
+/* ================= STAT CARDS ================= */
+
+.stat-card {
+    padding: 25px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.stat-icon {
+    font-size: 40px;
+    opacity: 0.35;
+}
+
+/* ================= GRADIENTS ================= */
+
+.gradient-primary {
+    background: linear-gradient(135deg, #1d2b64, #f8cdda);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+/* ================= QUIZ CARDS ================= */
+
+.quiz-card {
+    transition: all 0.3s ease;
+}
+
+.quiz-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+/* ================= TABLE ================= */
+
+.table thead {
+    background-color: #212529;
+    color: white;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f0f2f5;
+}
+
+/* ================= PROGRESS ================= */
+
+.progress {
+    height: 10px;
+    border-radius: 20px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 20px;
+    transition: width 0.6s ease;
+}
