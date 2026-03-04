@@ -1,126 +1,185 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<div class="container mt-5">
+<div class="container-fluid px-5 mt-5">
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="fw-bold">Dashboard</h2>
-        <a href="{{ url_for('main.create_quiz') }}" class="btn btn-dark shadow">
+    <h2 class="fw-bold mb-4">Dashboard</h2>
+
+    <!-- STATS -->
+    <div class="row mb-5">
+
+        <div class="col-md-6">
+            <div class="stat-card gradient-primary">
+                <div class="stat-label">Total Quizzes</div>
+                <div class="stat-number">{{ quizzes|length }}</div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="stat-card gradient-success">
+                <div class="stat-label">Total Attempts</div>
+                <div class="stat-number">{{ attempts|length }}</div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- PERFORMANCE CHART -->
+    <div class="card shadow-sm p-4 mb-5">
+
+        <h5 class="fw-bold mb-3">Performance Overview</h5>
+
+        <canvas id="performanceChart"></canvas>
+
+    </div>
+
+
+    <!-- QUIZZES -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h4>Your Quizzes</h4>
+
+        <a href="{{ url_for('main.create_quiz') }}" class="btn btn-dark">
             + Create New Quiz
         </a>
-    </div>
-
-    <!-- ================= STAT CARDS ================= -->
-    <div class="row g-4 mb-5">
-
-        <!-- Total Quizzes -->
-        <div class="col-md-6">
-            <div class="card stat-card gradient-primary shadow">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="stat-label">Total Quizzes</h6>
-                        <h2 class="stat-number">{{ quizzes|length }}</h2>
-                    </div>
-                    <div class="stat-icon">📚</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Attempts -->
-        <div class="col-md-6">
-            <div class="card stat-card gradient-success shadow">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="stat-label">Total Attempts</h6>
-                        <h2 class="stat-number">{{ attempts|length }}</h2>
-                    </div>
-                    <div class="stat-icon">🎯</div>
-                </div>
-            </div>
-        </div>
 
     </div>
 
-    <!-- ================= QUIZZES ================= -->
-    <h4 class="mb-4">Your Quizzes</h4>
+    <div class="row mb-5">
 
-    <div class="row g-4">
         {% for quiz in quizzes %}
-        <div class="col-md-4">
-            <div class="card quiz-card shadow-sm h-100">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div>
-                        <h5 class="fw-bold">{{ quiz.title }}</h5>
-                        <p class="text-muted small">
-                            {{ quiz.questions|length }} Questions
-                        </p>
-                    </div>
 
-                    <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}"
-                       class="btn btn-outline-dark btn-sm mt-3">
-                        View Quiz →
-                    </a>
-                </div>
+        <div class="col-md-4 mb-3">
+
+            <div class="card quiz-card shadow-sm p-3">
+
+                <h5>{{ quiz.title }}</h5>
+
+                <p class="text-muted">
+                    {{ quiz.questions|length }} Questions
+                </p>
+
+                <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="btn btn-outline-dark btn-sm">
+                    View Quiz →
+                </a>
+
             </div>
+
         </div>
+
         {% endfor %}
+
     </div>
+
 
     <hr class="my-5">
 
-    <!-- ================= ATTEMPTS ================= -->
-    <h4 class="mb-4">Recent Attempts</h4>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <!-- ATTEMPTS -->
+    <h4 class="mb-3">Recent Attempts</h4>
 
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Quiz</th>
-                        <th>Score</th>
-                        <th>Performance</th>
-                    </tr>
-                </thead>
+    <table class="table table-hover">
 
-                <tbody>
-                {% for attempt in attempts %}
-                <tr>
-                    <td>#{{ attempt.quiz_id }}</td>
-                    <td>{{ attempt.score }} / {{ attempt.total }}</td>
-                    <td>
+        <thead class="table-dark">
+            <tr>
+                <th>Quiz</th>
+                <th>Score</th>
+                <th>Performance</th>
+            </tr>
+        </thead>
 
-                        {% if attempt.total > 0 %}
-                            {% set percentage = (attempt.score * 100) // attempt.total %}
-                        {% else %}
-                            {% set percentage = 0 %}
-                        {% endif %}
+        <tbody>
 
-                        {% if percentage < 40 %}
-                            {% set color = "bg-danger" %}
-                        {% elif percentage < 70 %}
-                            {% set color = "bg-warning" %}
-                        {% else %}
-                            {% set color = "bg-success" %}
-                        {% endif %}
+            {% for attempt in attempts %}
 
-                        <div class="progress">
-                            <div class="progress-bar {{ color }}"
-                                 style="width: {{ percentage }}%">
-                            </div>
-                        </div>
+            <tr>
 
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
+                <td>#{{ attempt.quiz_id }}</td>
 
-            </table>
+                <td>{{ attempt.score }} / {{ attempt.total }}</td>
 
-        </div>
-    </div>
+                <td>
+
+                    {% if attempt.total > 0 %}
+                    {% set percentage = (attempt.score * 100) // attempt.total %}
+                    {% else %}
+                    {% set percentage = 0 %}
+                    {% endif %}
+
+                    <div class="progress custom-progress">
+
+                        <div class="progress-bar bg-success" style="width: {{ percentage }}%;"></div>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="3" class="text-center text-muted py-4">
+                    No attempts yet.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
 
 </div>
+
+
+<!-- CHART -->
+<!-- CHART -->
+<script>
+
+const labels = JSON.parse('{{ chart_labels | tojson | safe }}');
+const scores = JSON.parse('{{ chart_scores | tojson | safe }}');
+
+const ctx = document.getElementById('performanceChart');
+
+new Chart(ctx, {
+
+    type: 'line',
+
+    data: {
+
+        labels: labels,
+
+        datasets: [{
+            label: 'Score %',
+            data: scores,
+            borderColor: '#1d2b64',
+            backgroundColor: 'rgba(29,43,100,0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        scales: {
+            y: {
+                min: 0,
+                max: 100
+            }
+        }
+
+    }
+
+});
+
+</script>
 
 {% endblock %}
