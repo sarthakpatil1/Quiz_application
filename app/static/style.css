@@ -84,3 +84,23 @@ body {
     border-radius: 20px;
     transition: width 0.6s ease;
 }
+
+.stat-card {
+    border-radius: 16px;
+    padding: 25px;
+    color: white;
+    font-weight: 600;
+}
+
+.stat-number {
+    font-size: 34px;
+    margin-top: 5px;
+}
+
+.gradient-primary {
+    background: linear-gradient(135deg,#1d2b64,#f8cdda);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg,#11998e,#38ef7d);
+}

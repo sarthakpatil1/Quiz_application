@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+from flask import Blueprint, render_template, redirect, url_for, request, session, flash
 from app import db, bcrypt
+from app.models import User, Quiz, Question, Attempt
 from app.models import User, Quiz, Question, Attempt
 
 main = Blueprint('main', __name__)
@@ -25,6 +26,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
+        flash("Account created successfully!", "success")
         return redirect(url_for("main.login"))
 
     return render_template("register.html")
@@ -42,10 +44,11 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
-
             session["user_id"] = user.id
-
+            flash("Login successful!", "success")
             return redirect(url_for("main.dashboard"))
+        else:
+            flash("Invalid email or password", "danger")
 
     return render_template("login.html")
 
@@ -64,6 +67,8 @@ def dashboard():
     chart_labels = []
     chart_scores = []
 
+    total_percentage = 0
+
     for i, attempt in enumerate(attempts):
 
         chart_labels.append(f"Attempt {i+1}")
@@ -74,13 +79,23 @@ def dashboard():
             percentage = 0
 
         chart_scores.append(percentage)
+        total_percentage += percentage
+
+    # Analytics metrics
+    total_attempts = len(attempts)
+
+    avg_score = int(total_percentage / total_attempts) if total_attempts > 0 else 0
+
+    best_score = max(chart_scores) if chart_scores else 0
 
     return render_template(
         "dashboard.html",
         quizzes=quizzes,
         attempts=attempts,
         chart_labels=chart_labels,
-        chart_scores=chart_scores
+        chart_scores=chart_scores,
+        avg_score=avg_score,
+        best_score=best_score
     )
 
 
@@ -103,6 +118,7 @@ def create_quiz():
         db.session.add(quiz)
         db.session.commit()
 
+        flash("Quiz created successfully!", "success")
         return redirect(url_for("main.dashboard"))
 
     return render_template("create_quiz.html")
@@ -151,6 +167,7 @@ def add_question(quiz_id):
         db.session.add(question)
         db.session.commit()
 
+        flash("Question added successfully!", "success")
         return redirect(url_for("main.quiz_detail", quiz_id=quiz.id))
 
     return render_template(
@@ -199,6 +216,29 @@ def take_quiz(quiz_id):
         "take_quiz.html",
         quiz=quiz
     )
+    
+    # ---------------- DELETE ----------------
+@main.route("/delete_quiz/<int:quiz_id>", methods=["POST"])
+def delete_quiz(quiz_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    quiz = Quiz.query.get_or_404(quiz_id)
+
+    # delete related questions
+    Question.query.filter_by(quiz_id=quiz.id).delete()
+
+    # delete related attempts
+    Attempt.query.filter_by(quiz_id=quiz.id).delete()
+
+    # delete the quiz
+    db.session.delete(quiz)
+    db.session.commit()
+
+    flash("Quiz deleted successfully!", "warning")
+
+    return redirect(url_for("main.dashboard"))
 
 
 # ---------------- LOGOUT ----------------
