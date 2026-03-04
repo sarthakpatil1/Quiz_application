@@ -3,6 +3,12 @@
 
 <h2 class="fw-bold mb-4">{{ quiz.title }}</h2>
 
+{% if quiz.questions|length > 0 %}
+<a href="{{ url_for('main.take_quiz', quiz_id=quiz.id) }}" class="btn btn-success">
+Take Quiz
+</a>
+{% endif %}
+
 <div class="card shadow-sm p-4 mb-4">
     <a href="{{ url_for('main.add_question', quiz_id=quiz.id) }}"
        class="btn btn-dark btn-sm">
